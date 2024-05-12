@@ -10,6 +10,8 @@ How to run:
 4. In processing, go to file -> open -> the drawing folder -> drawing.pde.
 5. Click run, and go bananas.
 
-Specifications:__
-Size (unzipped): 7kb__
+Specifications:
+
+Size (unzipped): 7kb
+
 Size (zipped): 3kb
