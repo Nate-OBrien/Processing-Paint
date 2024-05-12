@@ -4,7 +4,7 @@ MS Paint, made in an unoptimized graphic engine, with someone who barely knows h
 
 How to run:
 
-1. Download processing via this link: [Here](processing.org/download)
+1. Download processing via this link: processing.org/download
 2. Download the zip file of the project, and extract it, as well as processing.
 3. Open processing.
 4. In processing, go to file -> open -> the drawing folder -> drawing.pde.
