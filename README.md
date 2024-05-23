@@ -12,6 +12,6 @@ How to run:
 
 Specifications:
 
-Size (unzipped): 11kb
+Size (unzipped): 12kb
 
-Size (zipped): 4kb
+Size (zipped): 2.78kb
