@@ -1,0 +1,284 @@
+drawing.pde
+
+```
+
+//defines variables
+int mSize = 25;
+int mChoice = 0;
+color dColor;
+ChildApplet colorSwap;
+Cursors c;
+drawing d;
+public boolean colorWindowOpen = false;
+
+void setup(){
+  size(1000,1000);
+  c = new Cursors(mSize, dColor);
+}
+
+void draw(){
+  frameRate(60);
+  noStroke(); 
+  background(255);
+  screenTop();
+  c.drawPoints();
+  c.cursorSet(mChoice);
+}
+
+
+void mouseWheel(MouseEvent event) {
+  //gets which way mouse moves and changes brush size
+  float e = event.getCount();
+  c.update(e);
+}
+
+void screenTop(){
+  //sets menu top
+  fill(200);
+  rectMode(CENTER);
+  rect(width/2, height/20, width,height/10);
+  fill(255);
+  stroke(0);
+  strokeWeight(5);
+  rect(100,50,50,50);
+  circle(200,50,50);
+  triangle(275,75,300,25,325,75);
+  fill(0);
+  textSize(25);
+  textAlign(CENTER);
+  text("ERASE", 925,40);
+  text("CLEAR", 925,80);
+  fill(dColor);
+  rect(400,50,50,50);
+  
+  fill(255,0);
+  if(!colorWindowOpen){
+    //highlight for items
+    if((mouseX > 60 && mouseX < 140) && (mouseY > 10 && mouseY < 90)){
+      rect(100,50,75,75);
+    } else if((mouseX > 160 && mouseX < 240) && (mouseY > 10 && mouseY < 90)){
+      rect(200,50,75,75);
+    } else if((mouseX > 260 && mouseX < 340) && (mouseY > 10 && mouseY < 90)){
+      rect(300,50,75,75);
+    } else if((mouseX > 875 && mouseX<975) && (mouseY > 10 && mouseY<52.5)){
+      rect(925,30,100,40);
+    } else if((mouseX > 875 && mouseX<975) && (mouseY > 60 && mouseY<95)){
+      rect(925,70,100,40);
+    } else if((mouseX > 360 && mouseX<440) && (mouseY > 10 && mouseY<90)){
+      rect(400,50,75,75);
+    }
+  }
+  
+  strokeWeight(1);
+  noStroke();
+}
+
+void mousePressed(){
+  if(!colorWindowOpen){
+    //actually changes info
+    if(((mouseX > 60 && mouseX < 140) && (mouseY > 10 && mouseY < 90)) && mousePressed){
+      mChoice = 1;
+    } else if(((mouseX > 160 && mouseX < 240) && (mouseY > 10 && mouseY < 90)) && mousePressed){
+      mChoice = 0;
+    } else if(((mouseX > 260 && mouseX < 340) && (mouseY > 10 && mouseY < 90)) && mousePressed){
+        mChoice = 2;
+    } else if(((mouseX > 360 && mouseX<440) && (mouseY > 10 && mouseY<90)) && mousePressed){
+      openColorSwap();
+    //sets to opposite to get toggle to work
+    } else if(((mouseX > 875 && mouseX<975) && (mouseY > 10 && mouseY<52.5))){
+        c.erase = !c.erase;
+      //sets to true to call the clear function
+    }else if(((mouseX > 875 && mouseX<975) && (mouseY > 60 && mouseY<95))){
+      c.clear = true;
+    }
+  }
+}
+
+//not needed rn, maybe if a udno/redo is added??
+void mouseReleased(){
+
+}
+
+
+void openColorSwap(){
+  colorSwap = new ChildApplet();
+  String[] args = {"TwoWindows"};
+  PApplet.runSketch(args, colorSwap);
+  colorWindowOpen = true;
+}
+
+class ChildApplet extends PApplet{
+  public void settings() {
+    size(525, 525);
+  }
+
+  public void setup() {
+    background(200);
+    surface.setAlwaysOnTop(true);
+    
+    d = new drawing();
+  }
+
+  int[][] spots = {{75,100}, {150,100}, {225,100}, {300,100}, {375,100}, {450,100},
+                   {75,200}, {150,200}, {225,200}, {300,200}, {375,200}, {450,200},
+                   {75,300}, {150,300}, {225,300}, {300,300}, {375,300}, {450,300},
+                   {75,400}, {150,400}, {225,400}, {300,400}, {375,400}, {450,400}};
+  color[] colorsForUser = {#0000FF,#FF0000,#00FF00,#FFA500,#FFFF00,#A020F0,#00FFFF,#FF5757,#00FF95,#FF6200,#D0FF00,#D400FF,#000066,#910000,#007000,#9C3C00,#8C8C00,#42006B,#000000,#FFFFFF,#FFD700,#FFC0D3,#BF006C,#595959};
+  public void draw() {
+    background(255);
+    
+    textAlign(CENTER);
+    textSize(35);
+    fill(0);
+    noStroke();
+    text("COLOR PICKER",width/2,50);
+    rectMode(CENTER);
+    for(int i = 0; i < spots.length;i++){
+      for(int j = 0; j < spots[i].length;j++){
+        if(i==19){
+          stroke(0);
+          strokeWeight(5);
+        } else {
+          noStroke();
+        }
+        fill(colorsForUser[i]);
+        rect(spots[i][0],spots[i][1],50,50);
+      }
+    }
+  }
+  
+  
+  
+  public void mousePressed(){
+    //bad if statements, but not anymore!
+    for(int i = 0; i < spots.length;i++){
+      for(int j = 0; j < spots[i].length;j++){
+        if((mouseX > spots[i][0]-25 && mouseX < spots[i][0]+25) && (mouseY > spots[i][1]-25 && mouseY < spots[i][1]+25)){
+          dColor = colorsForUser[i];
+          c.dColor = colorsForUser[i];
+          exit();
+        }
+      }
+    }
+   
+   
+  }
+  
+  public void exit(){
+    //hides window
+    surface.setVisible(false);
+    noLoop();
+    //reenables main window function
+    colorWindowOpen = false;
+  }
+}
+```
+
+
+Cursors.pde
+
+```
+
+class Cursors{
+  ArrayList<Point> points = new ArrayList<Point>();
+  
+  float mSize;
+  int mSizeCnt = 1;
+  //hex code for coloring
+  int dColor;
+  boolean erase = false;
+  boolean clear = false;
+  public Cursors(float mSize, color dColor){
+    this.mSize = mSize;
+    this.dColor = dColor;
+  }
+  
+  void update(float e){
+  
+    //increases/deceases brush size
+    if(e == -1){
+      mSize+=12.5;
+    } else {
+      mSize-=12.5;
+    }
+  
+  //locks size
+    if(mSize <= 12.5){mSize=12.5;}
+    if(mSize >= 250){mSize=250;}
+  }
+  void drawPoints() {
+  // Draw the points here
+  for (Point point : points) {
+    fill(point.c);
+      noStroke();
+
+    //switches shape for each drawn
+    switch(point.brushType){
+      case 0:
+        circle(point.x, point.y, point.size);
+        break;
+      case 1:
+        rect(point.x, point.y, point.size, point.size);
+        break;
+      case 2:
+        triangle(point.x - point.size/2, point.y + point.size/2, point.x ,point.y - point.size/2, point.x + point.size/2, point.y + point.size/2);
+        break;
+      }
+    }
+  }
+  void cursorSet(int s) {
+    //sets shape to cursor
+    fill(dColor,0);
+    float shapeOffset =  mSize / 2;
+    stroke(#FF0000);
+    strokeWeight(10);
+    if(mouseY > 100+shapeOffset){
+       switch(s){
+      case 0:
+        circle(mouseX,mouseY,mSize);
+        break;
+      case 1:
+        rect(mouseX,mouseY,mSize,mSize);
+        break;
+      case 2:
+        triangle(mouseX-mSize/2,mouseY+mSize/2,mouseX,mouseY -mSize/2, mouseX+mSize/2,mouseY+mSize/2);
+        break;
+      }
+    } 
+    
+    
+    if(clear){
+      points.clear();
+      //sets back to default if cleared
+      clear = false;
+      erase = false;
+    } else if(erase){
+      dColor = #FFFFFF;
+      d.dColor = #FFFFFF;
+    }
+    //adds new points to arraylist
+    if(mousePressed && !colorWindowOpen && mouseY > 100+mSizeCnt + shapeOffset){
+      
+      points.add(new Point(mouseX, mouseY, mSize, s, dColor));
+    }
+  }
+}  
+```
+
+
+Points.pde
+```
+class Point {
+  float x, y, size;
+  int brushType;
+  color c;
+  //gets all data for each drawn object
+  Point(float x, float y, float size, int brushType, color c) {
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.brushType = brushType;
+    this.c = c;
+  }
+}
+```
